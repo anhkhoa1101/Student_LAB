@@ -9,7 +9,7 @@ public class Course {
 
     private static final SimpleDateFormat DF = new SimpleDateFormat("dd/MM/yyyy");
 
-    private Course courseId;    // CSE201
+    private String courseId;    // CSE201
     private Student student;   // tham chiếu tới Student (file chỉ lưu studentId)
     private String courseName;
     private int duration;       // cột số nguyên thứ 4 trong file (5..10)
@@ -18,7 +18,7 @@ public class Course {
     public Course() {
     }
 
-    public Course(Course courseId, Student student, String courseName, int duration, Date startDate) {
+    public Course(String courseId, Student student, String courseName, int duration, Date startDate) {
         this.courseId = courseId;
         this.student = student;
         this.courseName = courseName;
@@ -26,8 +26,8 @@ public class Course {
         this.startDate = startDate;
     }
 
-    public Course getCourseId() { return courseId; }
-    public void setCourseId(Course courseId) { this.courseId = courseId; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
 
     public Student getStudent() { return student; }
     public void setStudent(Student student) { this.student = student; }

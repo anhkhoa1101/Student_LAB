@@ -2,6 +2,7 @@ package Core.Interfaces;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IBaseDAO<E> {
     List<E> readAll();
@@ -10,5 +11,5 @@ public interface IBaseDAO<E> {
     boolean add (E item);
     boolean update(E item);
     boolean delete (String id);
-    E findByID(String id);
+    Optional<E> findByID(String id);
 }

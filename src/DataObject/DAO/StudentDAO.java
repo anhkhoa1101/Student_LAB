@@ -8,6 +8,7 @@ import Utilities.FileIO.StudentFileIO;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class StudentDAO implements IStudentDAO {
 
@@ -37,6 +38,7 @@ public class StudentDAO implements IStudentDAO {
     @Override
     public List<Student> readAll() { return new ArrayList<>(students); }
 
+
     @Override
     public boolean writeAll(List<Student> list) {
         if (list == null) return false;
@@ -57,7 +59,7 @@ public class StudentDAO implements IStudentDAO {
 
     @Override
     public boolean add(Student s) {
-        return s != null && findByID(s.getId()) == null && students.add(s);
+        return students.add(s);
     }
 
     @Override
@@ -78,10 +80,11 @@ public class StudentDAO implements IStudentDAO {
     }
 
     @Override
-    public Student findByID(String id) {
-        if (id == null) return null;
+    public Optional<Student> findByID(String id) {
         return students.stream()
                 .filter(s -> s.getId().equalsIgnoreCase(id.trim()))
-                .findFirst().orElse(null);
+                .findFirst();
     }
+
+
 }
