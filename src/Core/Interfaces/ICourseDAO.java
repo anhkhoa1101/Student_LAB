@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ICourseDAO extends IBaseDAO<Course>{
     List<Course> findByName(String name);
+
 }
