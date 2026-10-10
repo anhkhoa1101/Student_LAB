@@ -13,3 +13,4 @@ public interface IBaseDAO<E> {
     boolean delete (String id);
     Optional<E> findByID(String id);
 }
+

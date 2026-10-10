@@ -1,95 +1,58 @@
 package DataObject.DAO;
 
-import Core.Interfaces.ICourseDAO;
 import Core.Entities.Course;
-
+import Core.Entities.Student;
+import Core.Interfaces.ICourseDAO;
+import Core.Interfaces.IStudentDAO;
+import Utilities.FileIO.CourseFileIO;
 import Utilities.FileIO.IFileIO;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CourseDAO implements ICourseDAO{
-    private static final String DEFAULT_PATH = "src/DataObject/data/Course.txt";
-    private final IFileIO<Course> fileIO;
-    private final List<Course> courses;
+public class CourseDAO extends BaseDAO<Course> implements ICourseDAO {
 
+    private static final String DEFAULT_PATH = "src/DataObject/data/Courses.txt";
+
+    /** Phải tạo StudentDAO trước: CourseFileIO cần Map studentId -> Student để parse. */
+    public CourseDAO(IStudentDAO studentDAO) {
+        this(new CourseFileIO(DEFAULT_PATH, toMap(studentDAO)));
+    }
 
     public CourseDAO(IFileIO<Course> fileIO) {
-        this.fileIO = fileIO;
-        this.courses = loadFromFile();
+        super(fileIO, "course");
     }
 
-    public List<Course> loadFromFile(){
-        try{
-            return fileIO.readFromFile();
-        }catch (Exception e){
-            System.out.println("Can't read course: " + e.getMessage());
-            return new ArrayList<>();
-        }
+    private static Map<String, Student> toMap(IStudentDAO dao) {
+        Map<String, Student> map = new HashMap<>();
+        for (Student s : dao.readAll()) map.put(s.getId(), s);
+        return map;
     }
 
     @Override
-    public List<Course> readAll() { return new ArrayList<>(courses); }
-
-    @Override
-    public boolean writeAll(List<Course> o){
-        courses.clear();
-        courses.addAll(o);
-        return save();
-    }
-
-    @Override
-    public boolean save(){
-        try{
-            return fileIO.saveToFile(courses);
-        }catch (Exception e){
-            System.out.println("Can't not save: " + e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    public boolean add(Course s) {
-        return courses.add(s);
-    }
-
-    @Override
-    public boolean update(Course s) {
-        if (s == null) return false;
-        for (int i = 0; i < courses.size(); i++) {
-            if (courses.get(i).getCourseId().equalsIgnoreCase(s.getCourseId())) {
-                courses.set(i, s);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean delete(String id) {
-        return id != null && courses.removeIf(s -> s.getCourseId().equalsIgnoreCase(id.trim()));
-    }
-
-    @Override
-    public Optional<Course> findByID(String id) {
-        return courses.stream()
-                .filter(s -> s.getCourseId().equalsIgnoreCase(id.trim()))
-                .findFirst();
-    }
+    protected String keyOf(Course c) { return c.getCourseId(); }
 
     @Override
     public List<Course> findByName(String name) {
         List<Course> result = new ArrayList<>();
-        if (name == null || name.trim().isEmpty()) {
-            return result;
-        }
-        String keyword = name.trim().toLowerCase();
-
-        for (Course c : courses) {
-            if (c.getCourseName() != null && c.getCourseName().toLowerCase().contains(keyword)) {
+        if (name == null || name.trim().isEmpty()) return result;
+        String kw = name.trim().toLowerCase();
+        for (Course c : items) {
+            if (c.getCourseName() != null && c.getCourseName().toLowerCase().contains(kw)) {
                 result.add(c);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Course> findByStudentId(String studentId) {
+        List<Course> result = new ArrayList<>();
+        if (studentId == null) return result;
+        String id = studentId.trim();
+        for (Course c : items) {
+            if (c.getStudent().getId().equalsIgnoreCase(id)) result.add(c);
         }
         return result;
     }
