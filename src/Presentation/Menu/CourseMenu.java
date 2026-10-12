@@ -23,9 +23,9 @@ public class CourseMenu {
     }
 
     public void add() {
-        String courseId = Inputter.getNonEmpty("Course ID: ");
-        String studentId = inputStudentId();
-        String name = Inputter.getNonEmpty("Course name: ");
+        String courseId = Inputter.getNonEmpty("Course ID: "); //Nhập Course ID
+        String studentId = inputStudentId(); //Nhập StudentID
+        String name = Inputter.getNonEmpty("Course name: "); //Nhập tên khóa học
         int duration = Inputter.getInt("Duration (" + CourseValidation.MIN_DURATION + "-"
                         + CourseValidation.MAX_DURATION + " weeks): ",
                 CourseValidation.MIN_DURATION, CourseValidation.MAX_DURATION);
@@ -40,7 +40,9 @@ public class CourseMenu {
         System.out.println("Added successfully (not saved to file yet).");
     }
 
-    /** Chức năng 7: tất cả khóa học, nhóm theo sinh viên. */
+    /**
+     * Chức năng 7: tất cả khóa học, nhóm theo sinh viên.
+     * */
     public void listGrouped() {
         List<Course> list = courseList.listGroupedByStudent();
         if (list.isEmpty()) {
@@ -53,7 +55,7 @@ public class CourseMenu {
             if (!sid.equals(current)) {
                 current = sid;
                 System.out.println("\n== " + sid + " - " + c.getStudent().getName() + " ==");
-                System.out.println(String.format("%-8s | %-22s | %3s | %s", "Course", "Name", "Dur", "Start"));
+                System.out.println(String.format("%-8s | %-8s | %-22s | %3s | %s", "CourseID", "Name", "Course Name", "Dur", "Start"));
             }
             System.out.println(c);
         }

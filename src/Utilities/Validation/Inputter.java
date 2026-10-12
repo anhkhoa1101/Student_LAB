@@ -10,7 +10,9 @@ public class Inputter {
 
     private Inputter() {}
 
-    /** Nhập tới khi hợp lệ. allowEmpty=true: Enter trống trả về "" (dùng cho Update). */
+    /**
+     * Nhập tới khi hợp lệ. allowEmpty=true: Enter trống trả về "" (dùng cho Update).
+     * */
     public static String getValid(String msg, Predicate<String> ok, String err, boolean allowEmpty) {
         while (true) {
             System.out.print(msg);
@@ -25,7 +27,10 @@ public class Inputter {
         return getValid(msg, s -> true, "Must not be empty.", false);
     }
 
-    // ---- int ----
+    /**
+     * Integer
+     * */
+
     private static boolean isInt(String s, int min, int max) {
         try { int v = Integer.parseInt(s); return v >= min && v <= max; }
         catch (NumberFormatException e) { return false; }
@@ -42,7 +47,9 @@ public class Inputter {
         return s.isEmpty() ? null : Integer.valueOf(s);
     }
 
-    // ---- double ----
+    /**
+     * DOUBLE
+     * */
     private static boolean isDouble(String s, double min, double max) {
         try { double v = Double.parseDouble(s.replace(',', '.')); return v >= min && v <= max; }
         catch (NumberFormatException e) { return false; }
@@ -59,7 +66,9 @@ public class Inputter {
         return s.isEmpty() ? null : Double.valueOf(s.replace(',', '.'));
     }
 
-    // ---- date ----
+    /**
+     * DATE
+     * */
     public static Date getDate(String msg, boolean allowEmpty) {
         String s = getValid(msg, x -> CourseValidation.parseDate(x) != null,
                 "Invalid date. Format: dd/MM/yyyy.", allowEmpty);

@@ -1,16 +1,27 @@
 package Utilities.Validation;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Date;
+import java.util.Locale;
 
 public interface CourseValidation {
 
     String DATE_FORMAT = "dd/MM/yyyy";
     int MIN_DURATION = 5;
     int MAX_DURATION = 10;
+
+    // Thứ tự quan trọng: d/M trước, M/d sau
+    String[] INPUT_PATTERNS = {
+            "d/M/uuuu", "M/d/uuuu",
+            "MMM d, uuuu", "MMM d uuuu",      // Sep 9, 2026
+            "d MMM, uuuu", "d MMM uuuu",      // 9 Sep, 2026 (sau khi bỏ "th")
+            "MMMM d, uuuu", "d MMMM, uuuu", "d MMMM uuuu"  // September 9, 2026
+    };
 
     static boolean isNotEmpty(String s) {
         return s != null && !s.trim().isEmpty();
@@ -20,22 +31,38 @@ public interface CourseValidation {
         return d >= MIN_DURATION && d <= MAX_DURATION;
     }
 
-    /** Ngày bắt đầu phải SAU hôm nay (hôm nay không tính). */
     static boolean isFutureDate(Date d) {
         if (d == null) return false;
         LocalDate date = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return date.isAfter(LocalDate.now());
     }
 
-    /** Trả về null nếu sai định dạng hoặc ngày không tồn tại (31/02/2026). */
-    static Date parseDate(String s) {
-        if (s == null || !s.trim().matches("^\\d{2}/\\d{2}/\\d{4}$")) return null;
-        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        df.setLenient(false);
-        try {
-            return df.parse(s.trim());
-        } catch (ParseException e) {
-            return null;
+    /** Nhận nhiều định dạng, trả về LocalDate (null nếu không hợp lệ). */
+    static LocalDate parseLocalDate(String s) {
+        if (s == null) return null;
+        String in = s.trim()
+                .replaceAll("(?i)(?<=\\d)(st|nd|rd|th)\\b", "")  // 9th -> 9
+                .replaceAll("(?i)\\bsept\\b", "Sep")
+                .replaceAll("\\s+", " ");
+        if (in.isEmpty()) return null;
+
+        for (String p : INPUT_PATTERNS) {
+            try {
+                DateTimeFormatter f = new DateTimeFormatterBuilder()
+                        .parseCaseInsensitive()
+                        .appendPattern(p)
+                        .toFormatter(Locale.ENGLISH)
+                        .withResolverStyle(ResolverStyle.STRICT); // 31/02 -> lỗi
+                return LocalDate.parse(in, f);
+            } catch (DateTimeParseException ignored) { }
         }
+        return null;
+    }
+
+    /** Giữ nguyên chữ ký cũ để CourseMenu/Inputter không phải sửa. */
+    static Date parseDate(String s) {
+        LocalDate d = parseLocalDate(s);
+        return d == null ? null
+                : Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }

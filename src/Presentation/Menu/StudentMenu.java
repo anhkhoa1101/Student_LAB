@@ -71,7 +71,7 @@ public class StudentMenu {
         }
     }
 
-    public void sortByGpa() { print(studentList.sortByGpaDesc()); }
+    public void sortByGpa() { print(studentList.sortByGpaAsc()); }
 
     private void print(List<Student> list) {
         if (list.isEmpty()) {

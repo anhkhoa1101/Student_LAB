@@ -23,7 +23,6 @@ public class StudentList {
 
     }
 
-
     public boolean isDirty() { return dirty; }
     public List<Student> getAll() {
         return studentDAO.readAll();
@@ -64,7 +63,6 @@ public class StudentList {
         return studentDAO.save();
     }
 
-
     public List<Student> findByMajor(String major) {
         String k = major.trim().toLowerCase();
         return studentDAO.readAll().stream()
@@ -80,9 +78,9 @@ public class StudentList {
                 .collect(Collectors.toList());
     }
 
-    public List<Student> sortByGpaDesc() {
+    public List<Student> sortByGpaAsc() {
         List<Student> list = studentDAO.readAll();
-        list.sort(Comparator.comparingDouble(Student::getGpa).reversed());
+        list.sort(Comparator.comparingDouble(Student::getGpa));
         return list;
     }
 

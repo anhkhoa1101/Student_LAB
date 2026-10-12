@@ -21,12 +21,11 @@ public class CourseList {
         this.studentDAO = studentDAO;
     }
 
-    public void add(String courseId, String studentId, String courseName,
-                    int duration, Date startDate) {
+    public void add(String courseId, String studentId, String courseName, int duration, Date startDate) {
+
         if (!CourseValidation.isNotEmpty(courseId))
             throw new IllegalArgumentException("Course ID cannot be empty!");
-        Student s = studentDAO.findByID(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("Student ID does not exist!"));
+        Student s = studentDAO.findByID(studentId).orElseThrow(() -> new IllegalArgumentException("Student ID does not exist!"));
         if (!CourseValidation.isNotEmpty(courseName))
             throw new IllegalArgumentException("Course name cannot be empty!");
         if (!CourseValidation.isValidDuration(duration))
@@ -40,10 +39,9 @@ public class CourseList {
         dirty = true;
     }
 
-    public List<Course> findByStudent(String studentId) {
-        return courseDAO.findByStudentId(studentId);
-    }
-
+/**
+ * Hiển thị tất cả khóa học dựa theo sinh viên
+ * */
     public List<Course> listGroupedByStudent() {
         List<Course> list = courseDAO.readAll();
         list.sort(Comparator.comparing((Course c) -> c.getStudent().getId())
